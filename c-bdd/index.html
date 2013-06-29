@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>C言語でBDD</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h1>C言語でBDD</h1>
+        </section>
+
+        <section data-markdown>
+        ## 自己紹介
+
+        * 繁谷 悠 @calorie001
+
+        * 立命館大学大学院 1回生
+
+        * 以前 : Campus-Inc
+
+        * 現在 : HappyElements
+
+        * 研究 : C言語のテスト
+        </section>
+
+        <section data-markdown>
+        # 突然ですが
+        </section>
+
+        <section data-markdown>
+        ## C言語でテスト書いたことありますか？
+        </section>
+
+        <section data-markdown>
+        # TDD
+        </section>
+
+        <section data-markdown>
+        ## CUnit
+
+        * [http://cunit.sourceforge.net](http://cunit.sourceforge.net/)
+        * テスト関数をmain関数で実行
+
+        ```
+void test_sort(void) {
+  int array[] = {11, 2};
+
+  sort(array);
+  CU_ASSERT(array[0] == 2);
+}
+        ```
+
+        </section>
+
+        <section data-markdown>
+        # BDD
+        </section>
+
+        <section data-markdown>
+        ## CSpec
+
+        * [https://github.com/arnaudbrejeon/cspec](https://github.com/arnaudbrejeon/cspec)
+        * DSL
+
+        ```
+DESCRIBE(strcmp, "int strcmp ( const char * str1, const char * str2 )")
+
+  IT( "returns 0 only when strings are equal" )
+    SHOULD_EQUAL( strcmp("hello", "hello"), 0)
+    SHOULD_NOT_EQUAL( strcmp("hello", "world"), 0)
+  END_IT
+
+END_DESCRIBE
+
+        ```
+
+        </section>
+
+        <section data-markdown>
+        ## なんかイケてない
+
+        * 大文字
+        * END_DESCRIBE, END_IT
+        </section>
+
+        <section data-markdown>
+        ## RSpec
+
+        * Ruby
+
+        ```
+describe Array, "when empty" do
+  before do
+    @empty_array = []
+  end
+
+  it "should be empty" do
+    @empty_array.should be_empty
+  end
+end
+        ```
+
+        </section>
+
+        <section data-markdown>
+        # かっこいい
+        </section>
+
+        <section data-markdown>
+        # fork
+        </section>
+
+        <section>
+          <section data-markdown>
+          ## 俺々CSpec
+
+          * [https://github.com/YuuShigetani/cspec](https://github.com/YuuShigetani/cspec)
+          * main.c
+          * Cではmain関数から実行される
+          * Cでのテストはmain関数にrunnerを定義する
+
+          ```
+main() {
+  CSpec_vRun(fabs_spec);
+}
+          ```
+
+          </section>
+          <section data-markdown>
+          * fabs_spec.c
+
+          ```
+describe(fabs_spec, "標準ライブラリfabsの")
+
+  context("引数が正の時")
+    it( "正の数を返す" )
+      should_equal( fabs(1.0), 1.0)
+      should_equal( fabs(0.0), 0.0)
+      should_equal( fabs(6.7), 6.7)
+    end
+  end
+
+  context("引数が負の時")
+    it( "正の数を返す" )
+      should_equal( fabs(-1.0), 1.0)
+      should_equal( fabs(-6.7), 6.7)
+    end
+  end
+
+end
+          ```
+
+          </section>
+          <section data-markdown>
+          * 結果
+
+          ![result](img/result.png "result")
+          </section>
+        </section>
+
+        <section data-markdown>
+        ## ちょっとかっこいい
+
+        * { や ; がない
+        * 小文字
+        * 終わりはrubyっぽくendで統一
+        </section>
+
+        <section data-markdown>
+        # 実装
+        </section>
+
+        <section data-markdown>
+        ## どうやったらDSLでかけるの？
+        </section>
+
+        <section data-markdown>
+        ## defineマクロ
+
+        * プリプロセッサ
+        * コンパイルの前に処理される
+        * { や ; などを隠蔽
+        * 引数を取ることができる
+
+        ```
+#define it(caption) { CSpec_StartIt(caption); {
+#define end } CSpec_End(); }
+
+#define should_be_true(x)  CSPEC_EVAL( (x) )
+#define should_equal(x, y) CSPEC_EVAL( (x) == (y) )
+        ```
+
+        </section>
+
+        <section data-markdown>
+        ## 簡単にDSLで書ける！
+        </section>
+
+        <section data-markdown>
+        ## まとめ
+
+        * C言語でも楽しく書ける
+
+        </section>
+
+        <section data-markdown>
+        # Thank you for listening.
+
+        ## Enjoy C!
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+          // { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+          // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
